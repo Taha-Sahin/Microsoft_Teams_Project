@@ -1,7 +1,4 @@
 {
-
-   "username" : "Username",
-   "password" : "Password"
-   
-
+    "username": "Username",
+    "password": "Password"
 }
