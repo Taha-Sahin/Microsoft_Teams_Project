@@ -5,7 +5,6 @@ from selenium.webdriver.edge.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
 import ctypes
 from selenium.webdriver.common.by import By
-from webdrivermanager import EdgeDriverManager
 from time import sleep
 import json
 
@@ -23,7 +22,7 @@ opt.add_experimental_option("prefs", { \
   })
 print("""MIT License
 
-Copyright (c) 2021 Taha SAHIN
+Copyright (c) 2021 Taha SAHIN , Melih Gunasti
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -120,7 +119,7 @@ def login_to_Teams():
         if Next != None:
             Next.click()
     except:
-        error_message("Please be sure that is it the correct username in config.json file.", "Username Error")
+        error_message("Please be sure that is it the correct username", "Username Error")
         
     try:    
         driver.find_element(By.XPATH, "//input[@id='i0118']").send_keys(config["password"])
@@ -129,11 +128,20 @@ def login_to_Teams():
         if Sign_in != None:
             Sign_in.click()
     except:
-        error_message("Please be sure that is it the correct password in config.json file.", "Password Error")
-        
-    Yes = driver.find_element(By.XPATH, "//input[@id='idSIButton9']")
-    if Yes != None:
-        Yes.click()
+        error_message("Please be sure that is it the correct password", "Password Error")
+    try:
+        driver.implicitly_wait(10)
+        Yes = driver.find_element(By.XPATH, "//input[@id='idSIButton9']")
+        if Yes != None:
+            Yes.click()
+    except:
+        pass
+    
+    try: 
+        driver.implicitly_wait(10)
+        xpath_find_click("//a[@class='use-app-lnk']")
+    except:
+        pass
     
 def open_settings_menu():
             xpath_find_click("//button[@id='settings-menu-button']//ng-include//*[name()='svg']")
@@ -170,49 +178,52 @@ def search_for_meeting():
     xpath_find_click("//button [@class ='ts-sym app-icons-fill-hover left-rail-header-filter-button left-rail-header-button']")
     xpath_find_click("//input[@id='left-rail-header-filter-input']")
     Channel = driver.find_elements(By.XPATH, '//span [@class = "truncate header-text"]')
-    for a in range (len(Channel)):#for search recent meeting
-        is_it_found = False
-        action.move_to_element(Channel[a])
-        action.click()
-        action.perform()
-        Channels = driver.find_elements(By.XPATH, '//span [@class = "truncate"]')
-        for j in range(len(Channels)):
-            action.move_to_element(Channels[j])
+    is_it_found = True
+    while(is_it_found):
+        for a in range (len(Channel)):#for search recent meeting
+            action.move_to_element(Channel[a])
             action.click()
             action.perform()
-            try:
-                check = driver.find_element(By.XPATH, "//button[@title='Join call with video']")
-                if(check != None):
-                    is_it_found = True
-                    break 
-            except:
-                continue
-        if (is_it_found == True):
-            channel_name = Channel[a].get_attribute('title')
-            print(f"\n You are joining the {channel_name} ")
-            break
-        
-        action.move_to_element(Channel[a])
-        action.click()
-        action.perform()
+            Channels = driver.find_elements(By.XPATH, '//span [@class = "truncate"]')
+            for j in range(len(Channels)):
+                action.move_to_element(Channels[j])
+                action.click()
+                action.perform()
+                try:
+                    check = driver.find_element(By.XPATH, "//button[@title='Join call with video']")
+                    if(check != None):
+                        is_it_found = False
+                        break 
+                except:
+                    continue
+            if (is_it_found == False):
+                channel_name = Channel[a].get_attribute('title')
+                print(f"You are joining the {channel_name}")
+                break
+            
+            action.move_to_element(Channel[a])
+            action.click()
+            action.perform()
 
-        
 def join_meeting():
+    driver.implicitly_wait(5)
     xpath_find_click("//button[@title='Join call with video']")
     xpath_find_click('//button [@class="ts-btn ts-btn-fluent ts-btn-fluent-secondary-alternate"]')
     xpath_find_click('//button [@class="join-btn ts-btn inset-border ts-btn-primary"]')
     xpath_find_click("//button[@id='roster-button']//ng-include[@class='iconWrapper']//*[name()='svg']")
-    while True:
-        number_of_people = driver.find_element(By.XPATH, "//span[normalize-space()='(1)']").get_attribute('ng-if')
-        print(number_of_people)    
-    
-    
         
-                
 def quit_meeting():
-    pass
-
-
+    max_people_amount = 0
+    check_val = True
+    while(check_val):
+        driver.implicitly_wait(5)
+        current_people = driver.find_elements(By.XPATH, "//li[@id='participant-8orgid05a22df99fc74988b76b9289948a0e05']")
+        if(len(current_people) > max_people_amount):
+            max_people_amount = len(current_people)
+        threshold_value= max_people_amount/5
+        if(len(current_people) < threshold_value):
+            check_val = False
+            break
 
 login_to_Teams()
 changing_list_view()
@@ -221,7 +232,7 @@ search_for_meeting()
 join_meeting()
 quit_meeting()
 
-sleep(500)
+
 
 
 
