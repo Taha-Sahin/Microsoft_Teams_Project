@@ -1,6 +1,6 @@
 from selenium import webdriver
 import sys
-import requests
+from selenium.webdriver.edge.service import Service
 from selenium.webdriver.edge.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
 import ctypes
@@ -103,8 +103,8 @@ def xpath_find_click(XPATH):
 def xpath_find_send_keys(XPATH, Key):
     
     driver.find_element(By.XPATH, XPATH).send_keys(Key)
-
-driver = webdriver.Edge(".\msedgedriver.exe", options= opt) 
+srvice = Service(".\msedgedriver.exe")
+driver = webdriver.Edge(service = srvice, options= opt) 
 
 action = ActionChains(driver)
 URL_Teams = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?response_type=id_token&scope=openid%20profile&client_id=5e3ce6c0-2b1f-4285-8d4b-75ee78787346&redirect_uri=https%3A%2F%2Fteams.microsoft.com%2Fgo&state=eyJpZCI6ImIzYzY5MjliLWJmYjYtNGE5NS05OGIyLTZlYmEyNWQ3ODFjOCIsInRzIjoxNjM3MjY5NjYwLCJtZXRob2QiOiJyZWRpcmVjdEludGVyYWN0aW9uIn0%3D&nonce=1c54841d-35f8-4eaa-bec2-4a83d69e51dd&client_info=1&x-client-SKU=MSAL.JS&x-client-Ver=1.3.4&client-request-id=e78a01ab-f8dc-4771-b328-0322d219bf73&response_mode=fragment"
