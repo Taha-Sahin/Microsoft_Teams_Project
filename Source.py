@@ -42,7 +42,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.""")
 
-
 def error_message(message, title ):
     ctypes.windll.user32.MessageBoxW(0, message, title, 1)
 try: 
@@ -141,7 +140,10 @@ def login_to_Teams():
     
     try: 
         driver.implicitly_wait(10)
-        xpath_find_click("//a[@class='use-app-lnk']")
+        use_app = xpath_find("//a[@class='use-app-lnk']")
+        action.move_to_element(use_app)
+        action.click()
+        action.perform()
     except:
         pass
     
@@ -224,8 +226,10 @@ def quit_meeting():
             max_people_amount = len(current_people)
         threshold_value= max_people_amount/5
         if(len(current_people) < threshold_value):
+            xpath_find_click("//button[@id='hangup-button']//ng-include[@class='iconWrapper']//*[name()='svg']//*[name()='path' and contains(@class,'icons-defa')]")
             check_val = False
             break
+        sleep(10)
 
 login_to_Teams()
 changing_list_view()
