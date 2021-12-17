@@ -22,7 +22,7 @@ opt.add_experimental_option("prefs", { \
   })
 print("""MIT License
 
-Copyright (c) 2021 Taha SAHIN , Melih Gunasti
+Copyright (c) 2021 Taha SAHIN 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -41,6 +41,8 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.""")
+
+
 def error_message(message, title ):
     ctypes.windll.user32.MessageBoxW(0, message, title, 1)
 try: 
