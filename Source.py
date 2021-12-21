@@ -40,7 +40,7 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.""")
+SOFTWARE.\n\n\n\n\n""")
 
 def error_message(message, title ):
     ctypes.windll.user32.MessageBoxW(0, message, title, 1)
@@ -101,7 +101,6 @@ def xpath_find_click(XPATH):
     driver.find_element(By.XPATH, XPATH).click()
     
 def xpath_find_send_keys(XPATH, Key):
-    
     driver.find_element(By.XPATH, XPATH).send_keys(Key)
 srvice = Service(".\msedgedriver.exe")
 driver = webdriver.Edge(service = srvice, options= opt) 
@@ -221,15 +220,21 @@ def quit_meeting():
     check_val = True
     while(check_val):
         driver.implicitly_wait(5)
-        current_people = driver.find_elements(By.XPATH, "//li[@id='participant-8orgid05a22df99fc74988b76b9289948a0e05']")
+        current_people = driver.find_elements(By.XPATH, '//li [@class="item vs-repeat-repeated-element" ]')
+        print(f"Current people = {len(current_people)}")
         if(len(current_people) > max_people_amount):
             max_people_amount = len(current_people)
-        threshold_value= max_people_amount/5
-        if(len(current_people) < threshold_value):
+        threshold_value= (3*max_people_amount)/10
+        print(f"Max people that joined the meeting = {max_people_amount}")
+        print(f"Threshold value = {threshold_value}")
+        if(len(current_people) <= threshold_value):
             xpath_find_click("//button[@id='hangup-button']//ng-include[@class='iconWrapper']//*[name()='svg']//*[name()='path' and contains(@class,'icons-defa')]")
             check_val = False
             break
-        sleep(10)
+        sleep(5)
+    
+    
+        
 
 login_to_Teams()
 changing_list_view()
@@ -237,6 +242,8 @@ search_for_expanded()
 search_for_meeting()
 join_meeting()
 quit_meeting()
+
+
 
 
 
