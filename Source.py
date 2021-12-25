@@ -1,18 +1,20 @@
 from selenium import webdriver
 import sys
-from selenium.webdriver.edge.service import Service
-from selenium.webdriver.edge.options import Options
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
 import ctypes
 from selenium.webdriver.common.by import By
 from time import sleep
 import json
+from crypting_inf import decrypt, encrypt, create_key
+import pwinput
+from webdriver_manager.chrome import ChromeDriverManager
+
 
 delay = 0
 opt = Options()
-opt.add_argument("--disable-infobars")
 opt.add_argument("start-maximized")
-opt.add_argument("--disable-extensions")
 # Pass the argument 1 to allow and 2 to block
 opt.add_experimental_option("prefs", { \
     "profile.default_content_setting_values.media_stream_mic": 2, 
@@ -51,12 +53,13 @@ except:
     error_message("Couldn't loaded the config file. Please be sure that there is a config.json file in your file directory.", "JSON file Error")
     sys.exit(1)
 
-def reset_password():
+def reset_inf():
     pass
     
 def intro_and_login():
     print("Welcome to the Teams Automater. ")    
     if(config['username'] == "Username"):
+        create_key()
         while True:
             username = input("Please enter your teams mail: ")
             print('Are you sure about this is the right mail ? Press Y for yes ,no N')
@@ -65,19 +68,19 @@ def intro_and_login():
                 config['username'] = username
                 break    
         with open ('config.json', 'w') as f:
-            json.dump(config, f, indent= 4)
+            json.dump(config, f, indent=4)
     if (config['password'] == "Password"):
         while True:
-            password = input ("Please enter your teams password: ")
+            password = encrypt(pwinput.pwinput("Please enter your password: "))
             print("Are you sure about this is the right mail ? Press Y for yes, no N") 
             checkpass = input()
             if(checkpass == 'y' or checkpass == 'Y'):
                 config['password'] = password 
                 break
         with open('config.json', 'w') as f:
-            json.dump(config, f, indent= 4)
-    print(f"Account: {config['username']}")
+            json.dump(config, f, indent=4)
     
+    print(f"Account: {config['username']}")
     
 
 def delayfunc():
@@ -102,8 +105,11 @@ def xpath_find_click(XPATH):
     
 def xpath_find_send_keys(XPATH, Key):
     driver.find_element(By.XPATH, XPATH).send_keys(Key)
-srvice = Service(".\msedgedriver.exe")
-driver = webdriver.Edge(service = srvice, options= opt) 
+
+try:
+    driver = webdriver.Chrome(ChromeDriverManager().install(), options= opt) 
+except:
+    print("Please be sure that you have chrome!")
 
 action = ActionChains(driver)
 URL_Teams = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?response_type=id_token&scope=openid%20profile&client_id=5e3ce6c0-2b1f-4285-8d4b-75ee78787346&redirect_uri=https%3A%2F%2Fteams.microsoft.com%2Fgo&state=eyJpZCI6ImIzYzY5MjliLWJmYjYtNGE5NS05OGIyLTZlYmEyNWQ3ODFjOCIsInRzIjoxNjM3MjY5NjYwLCJtZXRob2QiOiJyZWRpcmVjdEludGVyYWN0aW9uIn0%3D&nonce=1c54841d-35f8-4eaa-bec2-4a83d69e51dd&client_info=1&x-client-SKU=MSAL.JS&x-client-Ver=1.3.4&client-request-id=e78a01ab-f8dc-4771-b328-0322d219bf73&response_mode=fragment"
@@ -122,7 +128,7 @@ def login_to_Teams():
         error_message("Please be sure that is it the correct username", "Username Error")
         
     try:    
-        driver.find_element(By.XPATH, "//input[@id='i0118']").send_keys(config["password"])
+        driver.find_element(By.XPATH, "//input[@id='i0118']").send_keys(decrypt(config["password"]))
         sleep(2)
         Sign_in = driver.find_element(By.ID, "idSIButton9")
         if Sign_in != None:
@@ -134,6 +140,16 @@ def login_to_Teams():
         Yes = driver.find_element(By.XPATH, "//input[@id='idSIButton9']")
         if Yes != None:
             Yes.click()
+    except:
+        pass
+    
+    try:
+        driver.implicitly_wait(100)
+        pick_account = driver.find_element(By.XPATH, '//*[@id="tilesHolder"]/div[1]/div/div')
+        if (pick_account != None):
+            action.move_to_element(pick_account)
+            action.click()
+            action.perform()
     except:
         pass
     
