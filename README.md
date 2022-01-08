@@ -9,7 +9,7 @@ The main idea of this project is automate teams for meetings. It will automatica
 - After that, leave it to the program. It will search for meeting in your channels and if it finds a meeting, will join.
 - It is recording the current people number and finds the max people that have joined the meeting. If current people count will drop down below %30 of max people, it will quit the meeting and the program will be closed
 
-
+- The website is in progress.
 
 
 
